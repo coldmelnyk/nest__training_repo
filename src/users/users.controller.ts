@@ -10,7 +10,7 @@ import {
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { type IQueryParams } from 'src/type/api/queryParams';
-import { UsersCreateDto, type UsersUpdateDto } from 'src/dto/users/users.dto';
+import { UsersCreateDto, UsersUpdateDto } from 'src/dto/users/users.dto';
 
 @Controller('users')
 export class UsersController {
