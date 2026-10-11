@@ -4,6 +4,8 @@ import {
     UserUpdateInput,
 } from 'prisma/src/generated/prisma/models/User';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { IQueryParams } from 'src/type/api/queryParams';
+import { handleQueryParams } from 'src/utils/api/handleQueryParams';
 
 interface IEditUserProps {
     userId: string;
@@ -14,8 +16,10 @@ interface IEditUserProps {
 export class UsersService {
     constructor(private readonly prisma: PrismaService) {}
 
-    async getAll() {
-        return await this.prisma.user.findMany();
+    async getAll(queryParams: IQueryParams['GET']) {
+        const users = await this.prisma.user.findMany();
+
+        return handleQueryParams.GET(users, queryParams);
     }
 
     async createUser(userDto: UserCreateInput) {
