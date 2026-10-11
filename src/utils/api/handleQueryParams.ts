@@ -1,44 +1,51 @@
-import { IQueryParams, IQueryDataInstance } from 'src/type/api/queryParams';
+import {
+    IQueryParams,
+    IQueryOptionsInstance,
+    IQueryOptionsInstanceWhereValueObject,
+    StringKeyOf,
+} from 'src/type/api/queryParams';
+
+const buildWhereOptionArray = <TModel extends object>(
+    whereOptionKeys: readonly StringKeyOf<TModel>[],
+    searchString: string,
+): IQueryOptionsInstanceWhereValueObject[] => {
+    return whereOptionKeys.map((key) => ({
+        [key]: {
+            contains: searchString,
+            mode: 'insensitive',
+        },
+    }));
+};
 
 export const handleQueryParams = {
-    GET: (
-        dataArray: Required<IQueryDataInstance>[],
+    GET: <TModel extends object>(
         queryParams: IQueryParams['GET'],
-    ) => {
-        let dataObject = [...dataArray];
+        whereOptionKeys: readonly StringKeyOf<TModel>[] = [],
+    ): IQueryOptionsInstance => {
+        const optionsObject: IQueryOptionsInstance = {};
 
-        if (queryParams.direction) {
-            switch (queryParams.direction) {
-                case 'asc':
-                    dataObject = dataObject.sort(
-                        (user1, user2) =>
-                            new Date(user1.createdAt).getTime() -
-                            new Date(user2.createdAt).getTime(),
-                    );
-                    break;
-                case 'desc':
-                    dataObject = dataObject.sort(
-                        (user1, user2) =>
-                            new Date(user2.createdAt).getTime() -
-                            new Date(user1.createdAt).getTime(),
-                    );
-                    break;
-                default:
-                    break;
-            }
+        switch (queryParams.direction) {
+            case 'asc':
+                optionsObject.orderBy = { createdAt: 'asc' };
+                break;
+            case 'desc':
+                optionsObject.orderBy = { createdAt: 'desc' };
+                break;
+            default:
+                break;
         }
 
-        if (queryParams.filter) {
-            dataObject = dataObject.filter((user) => {
-                const formattedName = `${user.firstName} ${user.lastName}`
-                    .toLowerCase()
-                    .trim();
-                const formattedQuery = queryParams.filter.toLowerCase().trim();
+        if (queryParams.filter && whereOptionKeys.length) {
+            const whereArray = buildWhereOptionArray<TModel>(
+                whereOptionKeys,
+                queryParams.filter,
+            );
 
-                return formattedName.includes(formattedQuery);
-            });
+            optionsObject.where = {
+                OR: whereArray,
+            };
         }
 
-        return dataObject;
+        return optionsObject;
     },
 };
