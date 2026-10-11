@@ -1,16 +1,9 @@
 import { Injectable } from '@nestjs/common';
-import {
-    UserCreateInput,
-    UserUpdateInput,
-} from 'prisma/src/generated/prisma/models/User';
+import { UsersCreateDto } from 'src/dto/users/users.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { IQueryParams } from 'src/type/api/queryParams';
+import { IEditUserProps } from 'src/type/api/users/props';
 import { handleQueryParams } from 'src/utils/api/handleQueryParams';
-
-interface IEditUserProps {
-    userId: string;
-    body: UserUpdateInput;
-}
 
 @Injectable()
 export class UsersService {
@@ -22,7 +15,7 @@ export class UsersService {
         return handleQueryParams.GET(users, queryParams);
     }
 
-    async createUser(userDto: UserCreateInput) {
+    async createUser(userDto: UsersCreateDto) {
         return await this.prisma.user.create({ data: userDto });
     }
 

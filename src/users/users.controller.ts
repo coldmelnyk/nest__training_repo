@@ -9,11 +9,8 @@ import {
     Query,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
-import type {
-    UserCreateInput,
-    UserUpdateInput,
-} from 'prisma/src/generated/prisma/models/User';
 import { type IQueryParams } from 'src/type/api/queryParams';
+import { UsersCreateDto, type UsersUpdateDto } from 'src/dto/users/users.dto';
 
 @Controller('users')
 export class UsersController {
@@ -25,7 +22,7 @@ export class UsersController {
     }
 
     @Post('')
-    async createUser(@Body() createUserBody: UserCreateInput) {
+    async createUser(@Body() createUserBody: UsersCreateDto) {
         return await this.usersService.createUser(createUserBody);
     }
 
@@ -37,7 +34,7 @@ export class UsersController {
     @Patch(':id')
     async editUser(
         @Param('id') id: string,
-        @Body() editUserBody: UserUpdateInput,
+        @Body() editUserBody: UsersUpdateDto,
     ) {
         return await this.usersService.editUser({
             userId: id,
